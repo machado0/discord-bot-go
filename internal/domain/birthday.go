@@ -16,3 +16,7 @@ type Server struct {
 	Guild           string
 	BirthdayChannel string
 }
+
+func (Server) TableName() string {
+    return "servers"
+}
