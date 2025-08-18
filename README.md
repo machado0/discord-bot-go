@@ -69,7 +69,7 @@ docker-compose up --build -d
 docker-compose logs -f discord-bot
 ```
 
-## 🔨 Development
+## Development
 
 ### Local Development Setup
 
