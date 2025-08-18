@@ -11,25 +11,23 @@ import (
 	"syscall"
 	"time"
 
+	"discord-bot-go/internal/database"
 	"discord-bot-go/internal/domain"
 	"discord-bot-go/internal/infra/riot"
 	"discord-bot-go/internal/pkg/addbday"
 	"discord-bot-go/internal/pkg/addbdaychannel"
 	"discord-bot-go/internal/pkg/angeralert"
 	"discord-bot-go/internal/pkg/deletebday"
-	listbirthdays "discord-bot-go/internal/pkg/listbdays"
+	"discord-bot-go/internal/pkg/listbdays"
 	"discord-bot-go/internal/pkg/nextbday"
 	"discord-bot-go/internal/pkg/utils"
 	"discord-bot-go/internal/pkg/verifybday"
 	"discord-bot-go/internal/pkg/verifythumpy"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/glebarez/sqlite"
 	"github.com/joho/godotenv"
 	"gorm.io/gorm"
 )
-
-// TODO: fazer o cadastrar canal funcionar
 
 var command_add string = "!adicionar"
 var command_delete string = "!remover"
@@ -43,13 +41,16 @@ var command_anger_alert string = "!tiltou"
 var command_anger_counter string = "!rages"
 
 func main() {
-	errorEnv := godotenv.Load()
-	if errorEnv != nil {
-		log.Fatalf("Erro carregando arquivo .env: %v", errorEnv)
+	// carregando o arquivo .env
+	if errorEnv := godotenv.Load(); errorEnv != nil {
+		log.Println("*** Sem arquivo .env, utilizando variáveis locais! ***")
 	}
 
-	var db, err = gorm.Open(sqlite.Open(os.Getenv("DB_NAME")), &gorm.Config{})
-	db.AutoMigrate(&domain.Birthday{}, &domain.LastMatch{}, &domain.Server{}, &domain.Anger{})
+	// tempo pra garantir que o DB subiu
+	time.Sleep(5 * time.Second)
+
+	database.Connect()
+	db := database.DB
 
 	botToken := os.Getenv("BOT_TOKEN")
 	riotApiKey := os.Getenv("RIOT_API_KEY")
@@ -73,7 +74,7 @@ func main() {
 		case command_next_bday:
 			nextbday.NextBirthday(s, m, db, command_next_bday)
 		case command_list:
-			listbirthdays.List(s, m, db, command_list)
+			listbdays.List(s, m, db, command_list)
 		case command_add_channel:
 			addbdaychannel.AddBirthdayChannel(s, m, db)
 		case command_verify_bdays:

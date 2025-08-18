@@ -1,4 +1,4 @@
-package listbirthdays
+package listbdays
 
 import (
 	"fmt"

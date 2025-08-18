@@ -1,0 +1,39 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:15
+    container_name: discord-postgres
+    environment:
+      POSTGRES_USER: ${DB_USER}           
+      POSTGRES_PASSWORD: ${DB_PASSWORD}   
+      POSTGRES_DB: ${DB_NAME} 
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  discord-bot:
+    build: .
+    container_name: discord-bot
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      BOT_TOKEN: ${BOT_TOKEN}
+      THUMPY: ${THUMPY}
+      RIOT_API_KEY: ${RIOT_API_KEY}
+      GAPATHON_CHANNEL: ${GAPATHON_CHANNEL}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
