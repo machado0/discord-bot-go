@@ -13,21 +13,26 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-func VerifyThumpyCommand(s *discordgo.Session, m *discordgo.MessageCreate, client *riot.RiotClient) {
-	thumpy_solo_duo, match, _ := GetThumpyLastSoloDuo(client)
+var gameName = "CHRIST IS BACK"
+var tagLine = "GPTHN"
 
-	if thumpy_solo_duo == nil {
+func VerifyThumpyCommand(s *discordgo.Session, m *discordgo.MessageCreate, client *riot.RiotClient) {
+	playerSoloduo, match, _ := GetThumpyLastSoloDuo(client)
+
+	if playerSoloduo == nil {
 		fmt.Println("Thumpy não tem dados de Solo/Duo queue")
 		return
 	}
 
-	if didBroWin(match, thumpy_solo_duo.LeagueID) {
-		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Thumpy ganhou sua última solo duo e está com %d PDL", thumpy_solo_duo.LeaguePoints))
+	if didBroWin(match, os.Getenv("THUMPY")) {
+		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Thumpy ganhou sua última solo duo e está com %d PDL", playerSoloduo.LeaguePoints))
 	} else {
-		if thumpy_solo_duo.Tier != "MASTER" {
-			s.ChannelMessageSend(m.ChannelID, "Thumpy perdeu sua última solo duo e dropou do mestre!")
+		ranks := []string{"MASTER", "GRANDMASTER", "CHALLENGER"}
+
+		if slices.Contains(ranks, playerSoloduo.Tier) {
+			s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Thumpy perdeu sua última solo duo e está com %d PDL", playerSoloduo.LeaguePoints))
 		} else {
-			s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Thumpy perdeu sua última solo duo e está com %d PDL", thumpy_solo_duo.LeaguePoints))
+			s.ChannelMessageSend(m.ChannelID, "Thumpy perdeu sua última solo duo e dropou do mestre!")
 		}
 	}
 }
@@ -63,8 +68,6 @@ func findMatchDetails(client *riot.RiotClient, matchID string, attempts int) (*r
 }
 
 func GetThumpyLastSoloDuo(client *riot.RiotClient) (*riot.RankedAccountInfoDto, *riot.MatchResponse, string) {
-	gameName := "CHRIST IS BACK"
-	tagLine := "GPTHN"
 
 	account, err := client.GetAccountByRiotID(gameName, tagLine)
 	if err != nil {

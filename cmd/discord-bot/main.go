@@ -15,6 +15,7 @@ import (
 	"discord-bot-go/internal/infra/riot"
 	"discord-bot-go/internal/pkg/addbday"
 	"discord-bot-go/internal/pkg/addbdaychannel"
+	"discord-bot-go/internal/pkg/angeralert"
 	"discord-bot-go/internal/pkg/deletebday"
 	listbirthdays "discord-bot-go/internal/pkg/listbdays"
 	"discord-bot-go/internal/pkg/nextbday"
@@ -37,7 +38,9 @@ var command_list string = "!listar"
 var command_verify_bdays string = "!verificar"
 var command_add_channel string = "!addcanal"
 var command_commands string = "!comandos"
-var command_verificar_solo_duo_luca string = "!soloduo"
+var command_verify_thumpy_soloduo string = "!soloduo"
+var command_anger_alert string = "!tiltou"
+var command_anger_counter string = "!rages"
 
 func main() {
 	errorEnv := godotenv.Load()
@@ -46,7 +49,7 @@ func main() {
 	}
 
 	var db, err = gorm.Open(sqlite.Open(os.Getenv("DB_NAME")), &gorm.Config{})
-	db.AutoMigrate(&domain.Birthday{}, &domain.LastMatch{}, &domain.Server{})
+	db.AutoMigrate(&domain.Birthday{}, &domain.LastMatch{}, &domain.Server{}, &domain.Anger{})
 
 	botToken := os.Getenv("BOT_TOKEN")
 	riotApiKey := os.Getenv("RIOT_API_KEY")
@@ -77,8 +80,12 @@ func main() {
 			verifybday.VerifyBirthday(s, m, db)
 		case command_commands:
 			utils.ListCommands(s, m)
-		case command_verificar_solo_duo_luca:
+		case command_verify_thumpy_soloduo:
 			verifythumpy.VerifyThumpyCommand(s, m, riotClient)
+		case command_anger_alert:
+			angeralert.RegisterAnger(s, m, db)
+		case command_anger_counter:
+			angeralert.AngerAlertCounter(s, m, db)
 		}
 	})
 

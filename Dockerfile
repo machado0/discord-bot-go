@@ -6,5 +6,6 @@ COPY go.mod go.sum ./
 RUN go mod download
 
 COPY . .
+COPY cmd/discord-bot/.env .env  
 RUN go build -o /app/main ./cmd/discord-bot
 CMD ["/app/main"]
