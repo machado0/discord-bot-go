@@ -129,8 +129,9 @@ func dailyBirthdayCheck(s *discordgo.Session, db *gorm.DB) {
 	targetSecond := 0
 
 	for {
-		now := time.Now().Local()
-		nextRun := time.Date(now.Year(), now.Month(), now.Day(), targetHour, targetMinute, targetSecond, 0, time.Local)
+		brtLocation, _ := time.LoadLocation("America/Sao_Paulo")
+		now := time.Now().In(brtLocation)
+		nextRun := time.Date(now.Year(), now.Month(), now.Day(), targetHour, targetMinute, targetSecond, 0, brtLocation)
 
 		if now.After(nextRun) {
 			nextRun = nextRun.Add(24 * time.Hour)
