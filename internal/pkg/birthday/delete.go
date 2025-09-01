@@ -1,4 +1,4 @@
-package deletebday
+package birthday
 
 import (
 	"fmt"

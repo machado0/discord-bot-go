@@ -1,4 +1,4 @@
-package verifythumpy
+package league
 
 import (
 	"discord-bot-go/internal/infra/riot"

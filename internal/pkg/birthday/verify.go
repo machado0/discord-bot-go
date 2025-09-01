@@ -1,4 +1,4 @@
-package verifybday
+package birthday
 
 import (
 	"fmt"

@@ -1,4 +1,4 @@
-package nextbday
+package birthday
 
 import (
 	"fmt"

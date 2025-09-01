@@ -1,4 +1,4 @@
-package addbdaychannel
+package birthday
 
 import (
 	"fmt"

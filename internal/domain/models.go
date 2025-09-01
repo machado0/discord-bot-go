@@ -73,3 +73,31 @@ type BetResults struct {
 func (BetResults) TableName() string {
     return "bet_results"
 }
+
+type OpenAICompletionRequest struct {
+	Model    string        `json:"model"`
+	Messages []OpenAIMessage `json:"messages"`
+	Stream   bool          `json:"stream"`
+}
+
+type OpenAIMessage struct {
+	Role    string `json:"role"`
+	Content string `json:"content"`
+}
+
+type OpenAICompletionResponse struct {
+	Choices []struct {
+		Message OpenAIMessage `json:"message"`
+	} `json:"choices"`
+}
+
+type OpenAIEmbeddingRequest struct {
+	Model string `json:"model"`
+	Input string `json:"input"`
+}
+
+type OpenAIEmbeddingResponse struct {
+	Data []struct {
+		Embedding []float32 `json:"embedding"`
+	} `json:"data"`
+}

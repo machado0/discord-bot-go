@@ -1,4 +1,4 @@
-package angeralert
+package league
 
 import (
 	"discord-bot-go/internal/domain"
